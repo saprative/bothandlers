@@ -1,0 +1,21 @@
+{
+  "name": "bothandlers",
+  "version": "1.0.0",
+  "description": "BotHandlers is an open-source task manager designed specifically for AI agents, including: - Codex CLI - Claude Code - Antigravity CLI - OpenCode",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saprative/bothandlers.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/saprative/bothandlers/issues"
+  },
+  "homepage": "https://github.com/saprative/bothandlers#readme"
+}
