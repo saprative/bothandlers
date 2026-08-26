@@ -40,18 +40,18 @@ agents is free, and exhausting the pool meters overage rather than dropping an e
 
 ## Architecture
 
-Serverless and event-driven on AWS, in TypeScript.
+Serverless and event-driven on AWS and Cloudflare, in TypeScript.
 
 | Layer | Technology |
 |---|---|
 | Language | TypeScript (Python SDK is a first-class deliverable) |
-| Compute | AWS Lambda + API Gateway |
+| Compute | Cloudflare Workers (API) + AWS Lambda (Background) |
 | Database | DynamoDB |
 | Async | SQS |
 | Timers | EventBridge Scheduler |
 | Web / mobile | Next.js · React Native + Expo |
 | Infrastructure | Pulumi |
-| Local | Floci |
+| Local | Wrangler (Cloudflare) |
 
 The choice follows from the shape of the workload: an intervention is created, and then the
 system waits minutes or hours for a human. Paying for idle capacity to wait on people is the
@@ -81,18 +81,24 @@ BotHandlers utilizes a hybrid "Best of Both Worlds" architecture, leveraging Clo
 
 ## Local Development
 
-*Note: The local AWS emulator ([Floci](https://github.com/floci/floci)) is currently unsupported/offline.*
+With the migration to Cloudflare Workers for the REST API, local development is completely decoupled from Docker or AWS emulators.
 
-To test infrastructure or backend changes, you should commit and push your code to trigger a deployment to the `dev` environment (`dev.bothandlers.com`). 
-
-For frontend-only UI work:
+### 1. Run the Frontend (UI)
 ```bash
-# 1. Install dependencies
+cd apps/web
 pnpm install
-
-# 2. Run the Next.js app in dev mode (uses mock data)
 pnpm dev
 ```
+
+### 2. Run the Backend API (Wrangler)
+Because the API runs on Cloudflare Workers, you can use `wrangler` to run a high-fidelity local edge emulator:
+```bash
+cd backend/api
+pnpm install
+pnpm run dev
+```
+
+*Note: For testing background AWS Lambda workers or AWS infrastructure changes, continue to push your code to the `dev` branch to trigger a deployment to `dev.bothandlers.com`.*
 
 ## Deployment
 
