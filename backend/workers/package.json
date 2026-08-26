@@ -9,5 +9,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "dev": "tsx watch index.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^4.0.47",
+    "ai": "^7.0.79",
+    "zod": "^4.4.3"
   }
 }

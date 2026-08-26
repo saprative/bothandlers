@@ -69,6 +69,9 @@ exports.handler = async (event) => {
 };
 `;
 
+            const configOpts = new pulumi.Config();
+            const openAiApiKey = configOpts.getSecret("openaiApiKey");
+
             const lambda = new aws.lambda.Function(`${funcName}-func`, {
                 name: funcName,
                 role: role.arn,
@@ -79,6 +82,11 @@ exports.handler = async (event) => {
                 code: new pulumi.asset.AssetArchive({
                     "index.js": new pulumi.asset.StringAsset(placeholderCode)
                 }),
+                environment: {
+                    variables: {
+                        ...(openAiApiKey ? { OPENAI_API_KEY: openAiApiKey } : {})
+                    }
+                },
                 tags: { Environment: environment }
             }, { parent: this });
 
