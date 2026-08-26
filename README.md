@@ -63,6 +63,22 @@ Two guarantees drive everything else:
 
 > BotHandlers must never silently lose an intervention, and must never silently lose a human decision.
 
+## Infrastructure Stack
+
+BotHandlers utilizes a hybrid "Best of Both Worlds" architecture, leveraging Cloudflare for global edge delivery and security, and AWS for highly durable, transactional state.
+
+### Cloudflare (Edge & Delivery)
+* **Cloudflare Pages:** Hosts the Next.js frontend application (`apps/web`), providing global edge caching and instant static delivery.
+* **Cloudflare DNS & CDN:** Manages global routing, SSL certificates, and caching for `bothandlers.com` and `dev.bothandlers.com`.
+* **Cloudflare Zero Trust (Access):** Secures internal operator dashboards behind strict SSO policies.
+* **Cloudflare Workers:** Runs the Hono REST API at the edge to eliminate cold-start latency before hitting the backend database.
+
+### AWS (State & Orchestration)
+* **Amazon DynamoDB:** The single source of truth. Handles highly consistent, transactional state for interventions, organizations, and the immutable audit trail.
+* **Amazon SQS:** Provides at-least-once delivery guarantees for asynchronous tasks (e.g., delivering webhook callbacks back to the agents).
+* **Amazon EventBridge Scheduler:** Manages durable, late-firing timers (e.g., escalating an intervention if an operator doesn't respond within 30 minutes).
+* **AWS KMS:** Encrypts and manages application secrets and API keys.
+
 ## Local Development
 
 *Note: The local AWS emulator ([Floci](https://github.com/floci/floci)) is currently unsupported/offline.*
