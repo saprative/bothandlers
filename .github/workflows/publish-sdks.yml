@@ -1,16 +1,22 @@
-name: Publish SDKs
+name: Release SDKs
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  publish-npm:
-    name: Publish TypeScript SDK to npm
+  release:
+    name: Create Release PR or Publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -19,31 +25,15 @@ jobs:
           cache: 'pnpm'
       - name: Install Dependencies
         run: npm install -g pnpm && pnpm install
-      - name: Build SDK
+      
+      - name: Build TS SDK
         run: pnpm run build --filter @bothandlers/sdk-typescript
-      - name: Publish to npm
-        run: npm publish --access public
-        working-directory: sdk/typescript
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  publish-pypi:
-    name: Publish Python SDK to PyPI
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@v1
         with:
-          python-version: '3.11'
-      - name: Install build tools
-        run: pip install build twine
-      - name: Build Python Package
-        working-directory: sdk/python
-        run: python -m build
-      - name: Publish to PyPI
-        working-directory: sdk/python
-        run: python -m twine upload dist/*
+          publish: pnpm changeset publish
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
