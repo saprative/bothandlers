@@ -8,14 +8,17 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "dev": "tsx watch index.ts"
+    "dev": "wrangler dev"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1111.0",
+    "@aws-sdk/client-sqs": "^3.1111.0",
     "@hono/node-server": "^2.1.1",
     "cors": "^2.8.6",
     "hono": "^4.13.5"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19"
+    "@types/cors": "^2.8.19",
+    "wrangler": "^4.126.0"
   }
 }

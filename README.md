@@ -134,6 +134,7 @@ Because infrastructure state is stored in your own S3 bucket rather than Pulumi 
 
 However, to publish the Python and TypeScript SDKs automatically when code is merged to `main` via the `.github/workflows/publish-sdks.yml` pipeline, you must add the following to your repository (**Settings ➔ Secrets and variables ➔ Actions ➔ New repository secret**):
 
+* **`CLOUDFLARE_API_TOKEN`**: Generated from your Cloudflare dashboard (Edit Cloudflare Workers permissions). Required for the GitHub Actions pipeline to deploy the Hono REST API.
 * **`NPM_TOKEN`**: Generated from your [npmjs.com](https://www.npmjs.com/) account (Automation type). Required to publish `@bothandlers/sdk-typescript`.
 * **`PYPI_TOKEN`**: Generated from your [pypi.org](https://pypi.org/) account (Account Settings ➔ API tokens). Required to publish the `bothandlers-sdk` Python package.
 

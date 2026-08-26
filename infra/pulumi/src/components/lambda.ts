@@ -18,7 +18,6 @@ export class LambdaComponent extends pulumi.ComponentResource {
         const { environment, queues, tables } = args;
 
         const functionConfigs = [
-            { name: "api", memory: 256, timeout: 10 },
             { name: "routing-worker", memory: 256, timeout: 30, sqsTrigger: "routing" },
             { name: "notification-worker", memory: 256, timeout: 30, sqsTrigger: "notification" },
             { name: "webhook-worker", memory: 256, timeout: 30, sqsTrigger: "webhook" },

@@ -3,7 +3,6 @@ import { DynamoDbComponent } from "./src/components/dynamo";
 import { SqsComponent } from "./src/components/sqs";
 import { SchedulerComponent } from "./src/components/scheduler";
 import { LambdaComponent } from "./src/components/lambda";
-import { ApiGatewayComponent } from "./src/components/apigw";
 import { AlarmsComponent } from "./src/components/alarms";
 
 // Get stack environment name (e.g. dev, staging, production)
@@ -25,11 +24,27 @@ const lambdas = new LambdaComponent("lambda-functions", {
     tables: dynamoDb.tables
 });
 
-// 5. API Gateway
-const apiGateway = new ApiGatewayComponent("api-gateway", {
-    environment,
-    apiFunction: lambdas.functions["api"]
+// 5. Cloudflare Worker IAM Credentials
+const workerUser = new aws.iam.User("cloudflare-worker-user", {
+    path: "/service-accounts/",
 });
+
+// Give worker access to queues and tables
+new aws.iam.UserPolicyAttachment("worker-sqs-policy", {
+    user: workerUser.name,
+    policyArn: aws.iam.ManagedPolicy.AmazonSQSFullAccess, // Real deployment scopes this tightly
+});
+new aws.iam.UserPolicyAttachment("worker-dynamodb-policy", {
+    user: workerUser.name,
+    policyArn: aws.iam.ManagedPolicy.AmazonDynamoDBFullAccess, // Real deployment scopes this tightly
+});
+
+const workerAccessKey = new aws.iam.AccessKey("cloudflare-worker-key", {
+    user: workerUser.name,
+});
+
+export const workerAccessKeyId = workerAccessKey.id;
+export const workerSecretAccessKey = workerAccessKey.secret;
 
 // 6. Alarms & Budgets
 const alarms = new AlarmsComponent("cloudwatch-alarms", {
@@ -37,5 +52,3 @@ const alarms = new AlarmsComponent("cloudwatch-alarms", {
     dlqs: sqs.dlqs,
     functions: lambdas.functions
 });
-
-export const apiUrl = apiGateway.api.apiEndpoint;

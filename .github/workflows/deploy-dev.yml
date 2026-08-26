@@ -51,3 +51,7 @@ jobs:
           command: up
           stack-name: dev
           work-dir: infra/pulumi
+      - name: Deploy API to Cloudflare
+        run: pnpm --filter @bothandlers/api exec wrangler deploy --env dev
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
