@@ -1,9 +1,9 @@
-name: Deploy Infrastructure and Application
+name: Deploy to Dev
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 permissions:
   id-token: write
@@ -50,38 +50,4 @@ jobs:
         with:
           command: up
           stack-name: dev
-          work-dir: infra/pulumi
-
-  verify-dev:
-    name: End-to-End Verification (Dev)
-    needs: deploy-dev
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Running end-to-end verification against dev.bothandlers.com..."
-
-  deploy-prod:
-    name: Deploy to Prod
-    needs: verify-dev
-    runs-on: ubuntu-latest
-    concurrency: prod
-    environment: prod # Tied to GitHub Environments with reviewer protection
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-      - name: Install
-        run: npm install -g pnpm && pnpm install
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::000000000000:role/deploy-role-prod
-          aws-region: us-east-1
-      - name: Pulumi Up
-        uses: pulumi/actions@v5
-        with:
-          command: up
-          stack-name: prod
           work-dir: infra/pulumi

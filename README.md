@@ -97,15 +97,11 @@ Before GitHub can deploy to AWS, you must run the one-time Pulumi bootstrap stac
 5. **Push to GitHub:** Commit your workflow changes and push to `main`. GitHub Actions will now securely assume the deploy roles via OIDC and deploy your `dev` and `production` environments!
 
 ### 2. CI/CD Promotion
-The GitHub Actions workflow manages all continuous deployment:
-- **Pull Requests:** A preview of infrastructure changes is posted to the PR (`dev` stack).
-- **Merge to main:** The `deploy` workflow runs sequentially:
-  1. Deploys to `dev` (`dev.bothandlers.com`).
-  2. Runs End-to-End Verification against `dev`.
-  3. Pauses for manual GitHub Environment approval.
-  4. Deploys to `production` (`bothandlers.com`).
+The GitHub Actions workflow manages continuous deployment using a branch-to-environment mapping:
+- **`dev` branch ➔ `dev.bothandlers.com`**: All day-to-day engineering work is merged into the `dev` branch. When pushed, GitHub Actions automatically deploys the code to the `dev` environment.
+- **`main` branch ➔ `bothandlers.com`**: When a release is ready, you open a Pull Request from `dev` to `main`. Once this PR is manually reviewed and merged, GitHub Actions automatically deploys the code to the `production` environment.
 
-*Note: Since the local Floci emulator is currently unavailable/deprecated, developers should rely on pushing to `dev` for integration testing.*
+*Note: Since the local Floci emulator is currently offline, developers should branch off `dev`, do their work, and merge back into `dev` to test in the cloud.*
 
 ### 3. Secrets and Environments
 
