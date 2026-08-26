@@ -1,0 +1,13 @@
+{
+  "name": "@bothandlers/mcp",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "dev": "tsx watch index.ts"
+  }
+}

@@ -1,10 +1,20 @@
 {
   "name": "bothandlers",
   "version": "1.0.0",
-  "description": "BotHandlers is an open-source task manager designed specifically for AI agents, including: - Codex CLI - Claude Code - Antigravity CLI - OpenCode",
-  "main": "index.js",
+  "description": "A human-in-the-loop management platform for AI agents.",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "lint:boundaries": "depcruise --config .dependency-cruiser.cjs backend packages apps sdk",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "local:up": "docker-compose -f infra/local/docker-compose.yml up -d",
+    "local:down": "docker-compose -f infra/local/docker-compose.yml down",
+    "local:bootstrap": "pnpm --filter local exec ts-node bootstrap.ts",
+    "local:seed": "pnpm --filter local exec ts-node seed.ts",
+    "local:reset": "pnpm local:down && pnpm local:up && sleep 5 && pnpm local:bootstrap && pnpm local:seed",
+    "dev": "turbo run dev"
   },
   "repository": {
     "type": "git",
@@ -17,5 +27,15 @@
   "bugs": {
     "url": "https://github.com/saprative/bothandlers/issues"
   },
-  "homepage": "https://github.com/saprative/bothandlers#readme"
+  "homepage": "https://github.com/saprative/bothandlers#readme",
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "dependency-cruiser": "^18.2.0",
+    "eslint": "^10.8.1",
+    "tsx": "^4.23.12",
+    "turbo": "^2.10.10",
+    "typescript": "^5.5.4",
+    "vitest": "^4.1.10"
+  },
+  "packageManager": "pnpm@10.23.0"
 }

@@ -1,0 +1,4 @@
+[project]
+name = "bothandlers-sdk"
+version = "1.0.0"
+description = "BotHandlers SDK"

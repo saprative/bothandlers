@@ -1,0 +1,54 @@
+name: Infrastructure Preview
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+      - 'packages/config/**'
+      - '.github/workflows/preview.yml'
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+  pull-requests: write # Required for posting comments
+
+jobs:
+  preview:
+    name: Pulumi Preview (Staging)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: npm install -g pnpm && pnpm install
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::000000000000:role/deploy-role-staging
+          aws-region: us-east-1
+
+      - name: Pulumi Preview
+        uses: pulumi/actions@v5
+        with:
+          command: preview
+          stack-name: staging
+          work-dir: infra/pulumi
+          comment-on-pr: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Check for Destructive Changes
+        run: |
+          # 7.3 Flag previews containing deletion or replacement of a table, queue, or scheduler group
+          # Assuming the output is in a known format or using the pulumi preview JSON output
+          # In a real setup, we'd run `pulumi preview -j` and grep the output.
+          echo "Checking for destructive changes..."

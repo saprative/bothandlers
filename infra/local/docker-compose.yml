@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  floci:
+    image: ghcr.io/sappy/floci:latest
+    ports:
+      - "4566:4566"   # Main API endpoint for Dynamo, SQS, etc.
+      - "8025:8025"   # MailHog/Mail capture UI (assuming floci bundles one or we map it)
+    environment:
+      - SERVICES=dynamodb,sqs,scheduler,ses,cloudwatch
+      - DEBUG=1
+    volumes:
+      - "${PWD}/.floci:/var/lib/floci"

@@ -1,0 +1,3 @@
+name: bothandlers-bootstrap
+runtime: nodejs
+description: A minimal AWS TypeScript Pulumi program for bootstrapping state bucket, IAM OIDC and keys

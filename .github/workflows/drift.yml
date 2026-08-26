@@ -1,0 +1,43 @@
+name: Drift Detection
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # Run daily at 8 AM UTC
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  detect-drift:
+    name: Detect Infrastructure Drift
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, staging, production]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          
+      - name: Install
+        run: npm install -g pnpm && pnpm install
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::000000000000:role/deploy-role-${{ matrix.environment }}
+          aws-region: us-east-1
+
+      - name: Pulumi Preview (Drift)
+        uses: pulumi/actions@v5
+        with:
+          command: preview
+          stack-name: ${{ matrix.environment }}
+          work-dir: infra/pulumi
+          expect-no-changes: true # Fails the workflow if drift is detected
+
